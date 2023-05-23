@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "262800378775",
+    "project_id": "game-collector-db40f",
+    "storage_bucket": "game-collector-db40f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:262800378775:android:51ef92cf07a20d804a92d2",
+        "android_client_info": {
+          "package_name": "com.example.game_collector"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "262800378775-4pjtnt1q8ai3s0nn2ft1k3j3s4jfaaus.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.game_collector",
+            "certificate_hash": "af16f5bc889bd6ec1440aa6f0838b0c4eaf37a1a"
+          }
+        },
+        {
+          "client_id": "262800378775-7qmok4rai7ev7f9e775s2vuo2mebuq3c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA9Tjs86P7bbJsd5paEkYd99nF_zdTpreI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "262800378775-7qmok4rai7ev7f9e775s2vuo2mebuq3c.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
