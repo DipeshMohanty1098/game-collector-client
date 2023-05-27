@@ -1,5 +1,5 @@
-[] - text search box
-[] - load more functionality (pagination)
+[x] - text search box
+[x] - load more functionality (pagination)
 [] - adding games to collection 
     [] - add game to collection 
     [] - check if game is already in collection

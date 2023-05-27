@@ -1,9 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:game_collector/models/games.dart';
+import 'package:game_collector/models/tags.dart';
 import 'package:game_collector/screens/shared/loading.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:game_collector/services/mongoDBservice.dart';
 import 'package:game_collector/screens/shared/GameTile.dart';
 import 'dart:developer';
@@ -19,6 +19,45 @@ class _SearchScreenState extends State<SearchScreen> {
   MongodbService dbService;
   bool loading = false;
   List<dynamic> games = [];
+  String searchQuery = "";
+  int pageNumber = 0;
+  bool noMoreResults = false;
+  String consoleValue = "PlayStation";
+  List<String> consoles = [
+    "PlayStation",
+    "PlayStation 2",
+    "PlayStation 3",
+    "PlayStation 4",
+    "PlayStation 5",
+    "PlayStation Vita",
+    "PlayStation Portable"
+  ];
+  final controller = TextEditingController();
+
+  void changeText(String searchQuery) {
+    setState(() {
+      this.searchQuery = searchQuery;
+    });
+  }
+
+  void loadMoreResults(MongodbService dbservice) async {
+    setState(() {
+      pageNumber += 1;
+    });
+    List<dynamic> results =
+        await dbService.getgameResults(searchQuery, "ps3", pageNumber);
+    if (results.isEmpty) {
+      setState(() {
+        noMoreResults = true;
+      });
+    } else {
+      List<dynamic> newResults = [...games, ...results];
+      setState(() {
+        games = newResults;
+      });
+      log("AFTER ADDING: ${games.toString()}");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,29 +67,62 @@ class _SearchScreenState extends State<SearchScreen> {
       appBar: AppBar(title: const Text("Search Games")),
       body: Center(
         child: Column(children: [
-          ElevatedButton(
-              onPressed: () async {
-                await firebaseUser.getIdToken().then((token) async {
-                  dbService = MongodbService(token: token);
-                  setState(() {
-                    loading = true;
-                  });
-                  List<dynamic> games =
-                      await dbService.getgameResults("assassin", "ps3", 0);
-                  log(games.toString());
-                  setState(() {
-                    this.games = games;
-                    loading = false;
-                  });
+          Container(
+            padding: const EdgeInsets.all(10),
+            child: TextField(
+              onChanged: changeText,
+              decoration: const InputDecoration(
+                  labelText:
+                      'Search for a game here using phrases or keywords'),
+            ),
+          ),
+          DropdownButton(
+              value: consoleValue,
+              hint: const Text('Choose the console'),
+              items: consoles.map((String console) {
+                return DropdownMenuItem(
+                  value: console,
+                  child: Text(console),
+                );
+              }).toList(),
+              onChanged: (String newValue) {
+                setState(() {
+                  consoleValue = newValue;
                 });
-              },
+              }),
+          ElevatedButton(
+              onPressed: searchQuery == ""
+                  ? null
+                  : () async {
+                      await firebaseUser.getIdToken().then((token) async {
+                        dbService = MongodbService(token: token);
+                        setState(() {
+                          loading = true;
+                          noMoreResults = false;
+                          pageNumber = 0;
+                        });
+                        List<dynamic> games = await dbService.getgameResults(
+                            searchQuery, tags[consoleValue], 0);
+                        log(games.toString());
+                        setState(() {
+                          this.games = games;
+                          loading = false;
+                        });
+                      });
+                    },
               child: const Text("Search Games")),
           const SizedBox(height: 10),
           Expanded(
             child: loading
                 ? const Loading(text: "")
                 : games.isEmpty
-                    ? const Center(child: Text("Nothing to show"))
+                    ? Container(
+                        padding: const EdgeInsets.all(10),
+                        child: const Center(
+                            child: Text(
+                          "Nothing to show, search for a game using the search bar above",
+                          textAlign: TextAlign.center,
+                        )))
                     : games[0] is Games
                         ? ListView.builder(
                             itemCount: games.length,
@@ -68,13 +140,18 @@ class _SearchScreenState extends State<SearchScreen> {
                             style: const TextStyle(color: Colors.red),
                           )),
           ),
+          const SizedBox(height: 10),
           Container(
-              padding: const EdgeInsetsDirectional.only(bottom: 100),
-              child: games.isEmpty || games[0] is! Games
-                  ? Container()
-                  : TextButton(
-                      onPressed: () {},
-                      child: const Text('Load more results..')))
+              padding: const EdgeInsetsDirectional.only(bottom: 35),
+              child: noMoreResults == false
+                  ? games.isEmpty || games[0] is! Games
+                      ? Container()
+                      : TextButton(
+                          onPressed: () {
+                            loadMoreResults(dbService);
+                          },
+                          child: const Text('Load more results..'))
+                  : const Text("No more results to show"))
         ]),
       ),
     );
