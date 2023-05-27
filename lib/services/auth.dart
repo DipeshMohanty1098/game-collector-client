@@ -3,40 +3,44 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:developer';
 
-final FirebaseAuth _auth = FirebaseAuth.instance;
-final GoogleSignIn googleSignIn = GoogleSignIn();
+class AuthService {
+  final FirebaseAuth _auth;
+  AuthService(this._auth);
 
-Future<User> signInWithGoogle() async {
-  final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
-  final GoogleSignInAuthentication googleSignInAuthentication =
-      await googleSignInAccount.authentication;
+  Stream<User> get authState => _auth.authStateChanges();
 
-  final AuthCredential credential = GoogleAuthProvider.credential(
-      idToken: googleSignInAuthentication?.idToken,
-      accessToken: googleSignInAuthentication?.accessToken);
+  Future<User> signInWithGoogle() async {
+    final GoogleSignIn googleSignIn = GoogleSignIn();
+    final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
+    final GoogleSignInAuthentication googleSignInAuthentication =
+        await googleSignInAccount.authentication;
 
-  final UserCredential authResult =
-      await _auth.signInWithCredential(credential);
-  final User user = authResult.user;
+    final AuthCredential credential = GoogleAuthProvider.credential(
+        idToken: googleSignInAuthentication?.idToken,
+        accessToken: googleSignInAuthentication?.accessToken);
 
-  assert(!user.isAnonymous);
-  assert(await user.getIdToken() != null);
+    final UserCredential authResult =
+        await _auth.signInWithCredential(credential);
+    final User user = authResult.user;
 
-  final User currentUser = await _auth.currentUser;
-  assert(currentUser.uid == user.uid);
-  final token = await user.getIdToken();
-  final SharedPreferences sharedPreferences =
-      await SharedPreferences.getInstance();
-  sharedPreferences.setString('token', token);
-  log('TOKEN: $token');
-  sharedPreferences.setString('displayName', user.displayName);
+    assert(!user.isAnonymous);
+    assert(await user.getIdToken() != null);
 
-  return user;
-}
+    final User currentUser = await _auth.currentUser;
+    assert(currentUser.uid == user.uid);
+    final token = await user.getIdToken();
+    final SharedPreferences sharedPreferences =
+        await SharedPreferences.getInstance();
+    sharedPreferences.setString('token', token);
+    log('TOKEN: $token');
+    sharedPreferences.setString('displayName', user.displayName);
+    return user;
+  }
 
-Future signOutGoogle() async {
-  final SharedPreferences sharedPreferences =
-      await SharedPreferences.getInstance();
-  sharedPreferences.remove('token');
-  await googleSignIn.signOut();
+  Future signOutGoogle() async {
+    final SharedPreferences sharedPreferences =
+        await SharedPreferences.getInstance();
+    sharedPreferences.remove('token');
+    await _auth.signOut();
+  }
 }

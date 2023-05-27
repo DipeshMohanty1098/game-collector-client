@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:game_collector/screens/HomePage.dart';
@@ -7,7 +8,9 @@ import 'package:game_collector/screens/shared/loading.dart';
 import 'package:game_collector/screens/auth/wrapper.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const MyApp());
 }
 
@@ -24,19 +27,18 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    Firebase.initializeApp().whenComplete(() => {
-          print("App Initialized!"),
-          setState(() {
-            loading = false;
-          })
-        });
   }
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        //Provider<signInWithGoogle>
+        Provider<AuthService>(
+          create: (_) => AuthService(FirebaseAuth.instance),
+        ),
+        StreamProvider(
+            create: (context) => context.read<AuthService>().authState,
+            initialData: null)
       ],
       child: MaterialApp(
         title: 'Flutter Demo',
@@ -52,9 +54,7 @@ class _MyAppState extends State<MyApp> {
           // is not restarted.
           primarySwatch: Colors.blue,
         ),
-        home: loading == true
-            ? const Loading(text: "Initializing")
-            : const Wrapper(),
+        home: const Wrapper(),
       ),
     );
   }

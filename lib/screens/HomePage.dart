@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:game_collector/services/auth.dart';
 import 'package:game_collector/screens/auth/login.dart';
 import 'package:game_collector/screens/SearchScreen.dart';
+import 'package:provider/provider.dart';
 
 import 'shared/loading.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key key, this.userDisplayName}) : super(key: key);
-  final String userDisplayName;
+  const HomePage({Key key}) : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -22,14 +22,12 @@ class _HomePageState extends State<HomePage> {
       loading = true;
       text = 'Logging you out...';
     });
-    await signOutGoogle().whenComplete(() => {
-          Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => const Login()))
-        });
+    await context.read<AuthService>().signOutGoogle();
   }
 
   @override
   Widget build(BuildContext context) {
+    final firebaseUser = context.watch<User>();
     return loading
         ? Loading(text: text)
         : Scaffold(
@@ -43,7 +41,7 @@ class _HomePageState extends State<HomePage> {
                     icon: const Icon(Icons.power_settings_new))
               ],
             ),
-            body: Center(child: Text(widget.userDisplayName)),
+            body: Center(child: Text(firebaseUser.displayName)),
             floatingActionButton: FloatingActionButton(
               onPressed: () {
                 Navigator.push(

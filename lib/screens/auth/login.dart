@@ -1,7 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:game_collector/screens/HomePage.dart';
 import 'package:game_collector/services/auth.dart';
+import 'package:provider/provider.dart';
 
 import '../shared/loading.dart';
 
@@ -12,17 +12,9 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-  User user;
   bool loading = false;
   void click() {
-    signInWithGoogle().then((user) => {
-          this.user = user,
-          Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                  builder: (context) =>
-                      HomePage(userDisplayName: user.displayName)))
-        });
+    context.read<AuthService>().signInWithGoogle();
   }
 
   @override

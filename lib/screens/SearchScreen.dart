@@ -1,7 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:game_collector/models/games.dart';
+import 'package:game_collector/screens/shared/loading.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:game_collector/services/mongoDBservice.dart';
 import 'package:game_collector/screens/shared/GameTile.dart';
+import 'dart:developer';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({Key key}) : super(key: key);
@@ -11,26 +16,13 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
-  String token;
   MongodbService dbService;
+  bool loading = false;
   List<dynamic> games = [];
-  @override
-  void initState() {
-    super.initState();
-    getPrerequisites();
-  }
-
-  Future<void> getPrerequisites() async {
-    final SharedPreferences sharedPreferences =
-        await SharedPreferences.getInstance();
-    setState(() {
-      token = sharedPreferences.getString('token');
-      dbService = MongodbService(token: token);
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
+    final firebaseUser = context.watch<User>();
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(title: const Text("Search Games")),
@@ -38,29 +30,51 @@ class _SearchScreenState extends State<SearchScreen> {
         child: Column(children: [
           ElevatedButton(
               onPressed: () async {
-                List<dynamic> games =
-                    await dbService.getgameResults("assassin", "ps3", 0);
-                setState(() {
-                  this.games = games;
+                await firebaseUser.getIdToken().then((token) async {
+                  dbService = MongodbService(token: token);
+                  setState(() {
+                    loading = true;
+                  });
+                  List<dynamic> games =
+                      await dbService.getgameResults("assassin", "ps3", 0);
+                  log(games.toString());
+                  setState(() {
+                    this.games = games;
+                    loading = false;
+                  });
                 });
               },
               child: const Text("Search Games")),
+          const SizedBox(height: 10),
           Expanded(
-            child: ListView.builder(
-              itemCount: games.length,
-              itemBuilder: (_, index) {
-                return GameTile(
-                    title: games[index].title,
-                    platform: games[index].platform,
-                    releaseDate: games[index].releaseDate,
-                    imageLink: games[index].imageLink);
-              },
-            ),
+            child: loading
+                ? const Loading(text: "")
+                : games.isEmpty
+                    ? const Center(child: Text("Nothing to show"))
+                    : games[0] is Games
+                        ? ListView.builder(
+                            itemCount: games.length,
+                            itemBuilder: (_, index) {
+                              return GameTile(
+                                  title: games[index].title,
+                                  platform: games[index].platform,
+                                  releaseDate: games[index].releaseDate,
+                                  imageLink: games[index].imageLink);
+                            },
+                          )
+                        : Center(
+                            child: Text(
+                            games[0]['error'],
+                            style: const TextStyle(color: Colors.red),
+                          )),
           ),
           Container(
               padding: const EdgeInsetsDirectional.only(bottom: 100),
-              child: TextButton(
-                  onPressed: () {}, child: const Text('Load more results..')))
+              child: games.isEmpty || games[0] is! Games
+                  ? Container()
+                  : TextButton(
+                      onPressed: () {},
+                      child: const Text('Load more results..')))
         ]),
       ),
     );
