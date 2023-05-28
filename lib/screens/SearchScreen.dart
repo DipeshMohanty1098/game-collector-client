@@ -8,6 +8,8 @@ import 'package:game_collector/services/mongoDBservice.dart';
 import 'package:game_collector/screens/shared/GameTile.dart';
 import 'dart:developer';
 
+import '../services/firebaseService.dart';
+
 class SearchScreen extends StatefulWidget {
   const SearchScreen({Key key}) : super(key: key);
 
@@ -128,6 +130,8 @@ class _SearchScreenState extends State<SearchScreen> {
                             itemCount: games.length,
                             itemBuilder: (_, index) {
                               return GameTile(
+                                  user: firebaseUser,
+                                  id: games[index].id,
                                   title: games[index].title,
                                   platform: games[index].platform,
                                   releaseDate: games[index].releaseDate,

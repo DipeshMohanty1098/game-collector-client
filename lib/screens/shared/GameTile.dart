@@ -1,14 +1,57 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:transparent_image/transparent_image.dart';
 
-class GameTile extends StatelessWidget {
+import '../../services/firebaseService.dart';
+
+class GameTile extends StatefulWidget {
   const GameTile(
-      {Key key, this.platform, this.releaseDate, this.title, this.imageLink})
+      {Key key,
+      this.user,
+      this.id,
+      this.platform,
+      this.releaseDate,
+      this.title,
+      this.imageLink})
       : super(key: key);
+  final User user;
   final String title;
   final String platform;
   final String releaseDate;
   final String imageLink;
+  final String id;
+
+  @override
+  State<GameTile> createState() => _GameTileState();
+}
+
+class _GameTileState extends State<GameTile> {
+  FirebaseService fbService;
+  bool loading = true;
+  bool inCollection = false;
+  @override
+  void initState() {
+    super.initState();
+    checkGameInCollection(widget.id);
+  }
+
+  void addGameToCollection(FirebaseService fbService, String id, String title,
+      String platform) async {
+    await fbService.addGameToCollection(id, title, platform);
+  }
+
+  void checkGameInCollection(String gameId) {
+    setState(() {
+      fbService = FirebaseService(firebaseUser: widget.user);
+      fbService.gameInCollection(gameId).then((value) => {
+            setState(() {
+              inCollection = value;
+              loading = false;
+            })
+          });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,18 +62,30 @@ class GameTile extends StatelessWidget {
         contentPadding: const EdgeInsets.fromLTRB(8, 10, 0, 10),
         leading: FadeInImage.memoryNetwork(
           placeholder: kTransparentImage,
-          image: imageLink,
+          image: widget.imageLink,
         ),
-        title: Text(title),
+        title: Text(widget.title),
         subtitle: Text(
-          '$platform\nReleased: ${releaseDate.substring(0, 15)}',
+          '${widget.platform}\nReleased: ${widget.releaseDate.substring(0, 15)}',
           style:
               TextStyle(color: Colors.black.withOpacity(0.6), fontSize: 13.0),
         ),
-        trailing: TextButton(
-          child: const Text('Add'),
-          onPressed: () {},
-        ),
+        trailing: loading
+            ? const CircularProgressIndicator()
+            : inCollection
+                ? Container(
+                    padding: const EdgeInsets.only(right: 10),
+                    child: const Text("Collected"))
+                : TextButton(
+                    child: const Text('Add'),
+                    onPressed: () {
+                      addGameToCollection(
+                          fbService, widget.id, widget.title, widget.platform);
+                      setState(() {
+                        inCollection = true;
+                      });
+                    },
+                  ),
       ),
     );
   }

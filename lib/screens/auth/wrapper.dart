@@ -12,6 +12,8 @@ class Wrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final firebaseUser = context.watch<User>();
-    return firebaseUser != null ? const HomePage() : const Login();
+    return firebaseUser != null
+        ? HomePage(firebaseUser: firebaseUser)
+        : const Login();
   }
 }
