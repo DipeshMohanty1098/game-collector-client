@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 class GameTile extends StatelessWidget {
   const GameTile(
@@ -16,7 +17,10 @@ class GameTile extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: ListTile(
         contentPadding: const EdgeInsets.fromLTRB(8, 10, 0, 10),
-        leading: Image.network(imageLink),
+        leading: FadeInImage.memoryNetwork(
+          placeholder: kTransparentImage,
+          image: imageLink,
+        ),
         title: Text(title),
         subtitle: Text(
           '$platform\nReleased: ${releaseDate.substring(0, 15)}',
