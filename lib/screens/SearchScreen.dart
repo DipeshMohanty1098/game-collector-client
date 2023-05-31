@@ -46,8 +46,8 @@ class _SearchScreenState extends State<SearchScreen> {
     setState(() {
       pageNumber += 1;
     });
-    List<dynamic> results =
-        await dbService.getgameResults(searchQuery, "ps3", pageNumber);
+    List<dynamic> results = await dbService.getgameResults(
+        searchQuery, tags[consoleValue], pageNumber);
     if (results.isEmpty) {
       setState(() {
         noMoreResults = true;
@@ -57,7 +57,7 @@ class _SearchScreenState extends State<SearchScreen> {
       setState(() {
         games = newResults;
       });
-      log("AFTER ADDING: ${games.toString()}");
+      //log("AFTER ADDING: ${games.toString()}");
     }
   }
 
@@ -74,24 +74,29 @@ class _SearchScreenState extends State<SearchScreen> {
             child: TextField(
               onChanged: changeText,
               decoration: const InputDecoration(
-                  labelText:
-                      'Search for a game here using phrases or keywords'),
+                  labelText: 'Search for a game using phrases or keywords'),
             ),
           ),
-          DropdownButton(
-              value: consoleValue,
-              hint: const Text('Choose the console'),
-              items: consoles.map((String console) {
-                return DropdownMenuItem(
-                  value: console,
-                  child: Text(console),
-                );
-              }).toList(),
-              onChanged: (String newValue) {
-                setState(() {
-                  consoleValue = newValue;
-                });
-              }),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text("Console: "),
+              DropdownButton(
+                  value: consoleValue,
+                  hint: const Text('Choose the console'),
+                  items: consoles.map((String console) {
+                    return DropdownMenuItem(
+                      value: console,
+                      child: Text(console),
+                    );
+                  }).toList(),
+                  onChanged: (String newValue) {
+                    setState(() {
+                      consoleValue = newValue;
+                    });
+                  })
+            ],
+          ),
           ElevatedButton(
               onPressed: searchQuery == ""
                   ? null
@@ -105,7 +110,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         });
                         List<dynamic> games = await dbService.getgameResults(
                             searchQuery, tags[consoleValue], 0);
-                        log(games.toString());
+                        //log(games.toString());
                         setState(() {
                           this.games = games;
                           loading = false;
@@ -161,11 +166,3 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 }
-
-/*
-gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                  maxCrossAxisExtent: 220,
-                  childAspectRatio: 3 / 2,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10),
-                  */

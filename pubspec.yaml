@@ -39,6 +39,8 @@ dependencies:
   provider: 
   transparent_image: ^2.0.1
   cloud_firestore: ^4.7.1
+  fl_chart: ^0.62.0
+  d_chart: ^2.2.11
 
 
 
