@@ -4,7 +4,10 @@
     [x] - add game to collection 
     [x] - check if game is already in collection
 [x] - registering/ updating user information 
-[] - dashboard
+[x] - dashboard
+[] - delete game from collection 
+    [] - delete game document
+    [] - reduce collection count 
 
 
 [] - deployment

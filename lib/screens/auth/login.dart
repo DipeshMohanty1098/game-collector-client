@@ -23,12 +23,12 @@ class _LoginState extends State<Login> {
         ? const Loading(text: "Signing you in")
         : Scaffold(
             appBar: AppBar(
-              title: const Text("Login/SignUp"),
+              title: const Text("Login or Sign Up"),
               centerTitle: true,
             ),
             body: Center(
                 child: ElevatedButton(
-              child: const Text("Login/Sign Up with Google"),
+              child: const Text("Login or Sign Up with Google"),
               onPressed: () {
                 click();
                 setState(() {

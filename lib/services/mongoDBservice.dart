@@ -59,4 +59,42 @@ class MongodbService {
       }
     }
   }
+
+  Future<dynamic> getGame(String gameId) async {
+    var url = Uri.parse('http://192.168.0.107:3000/data/games/$gameId');
+    var response = await http
+        .get(url, headers: headers)
+        .timeout(const Duration(seconds: 30), onTimeout: () {
+      return http.Response('Error', 408);
+    });
+    log(response.body);
+    if (response.body == 'Error') {
+      return [
+        {"error": "There was some error in returning the data"}
+      ];
+    } else {
+      try {
+        if (response.statusCode == 200) {
+          var game = convert.jsonDecode(response.body);
+          dynamic result = Games(
+            id: game['_id'],
+            title: game['title'],
+            releaseDate: game['release_date'],
+            metacriticScore: game['metacritic_score'],
+            imageLink: game['image_link'],
+            description: game['description'],
+            platform: game['platform'],
+            tags: game['tags'],
+          );
+          log(result.toString());
+          return result;
+        } else {
+          log(response.body);
+          return {"error": "There was some error in returning the data"};
+        }
+      } catch (error) {
+        return {"error": "There was some error in returning the data"};
+      }
+    }
+  }
 }

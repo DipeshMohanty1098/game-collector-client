@@ -2,8 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:transparent_image/transparent_image.dart';
-
 import '../../services/firebaseService.dart';
+import 'callSnackBar.dart';
 
 class GameTile extends StatefulWidget {
   const GameTile(
@@ -38,7 +38,8 @@ class _GameTileState extends State<GameTile> {
 
   void addGameToCollection(FirebaseService fbService, String id, String title,
       String platform) async {
-    await fbService.addGameToCollection(id, title, platform);
+    fbService.addGameToCollection(id, title, platform).then((value) =>
+        {ScaffoldMessenger.of(context).showSnackBar(returnSnackBar(value))});
   }
 
   void checkGameInCollection(String gameId) {
