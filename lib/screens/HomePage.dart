@@ -2,12 +2,14 @@ import 'dart:developer';
 import 'package:d_chart/d_chart.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:game_collector/models/user.dart';
 import 'package:game_collector/screens/dashboard/donut_chart.dart';
 import 'package:game_collector/services/auth.dart';
 import 'package:game_collector/screens/SearchScreen.dart';
 import 'package:game_collector/services/firebaseservice.dart';
 import 'package:provider/provider.dart';
 
+import '../models/firebaseGame.dart';
 import 'shared/loading.dart';
 
 class HomePage extends StatefulWidget {
@@ -49,35 +51,12 @@ class _HomePageState extends State<HomePage> {
     final firebaseUser = context.watch<User>();
     return loading
         ? Loading(text: text)
-        : Scaffold(
-            appBar: AppBar(
-              title: const Text("Your Dashboard"),
-              centerTitle: true,
-              actions: [
-                IconButton(
-                    onPressed: () {
-                      click();
-                    },
-                    icon: const Icon(Icons.power_settings_new))
-              ],
-            ),
-            body: Column(children: [
-              const SizedBox(height: 25.0),
-              Center(
-                  child: Text(
-                "Welcome ${firebaseUser.displayName}!",
-                style: const TextStyle(fontSize: 25),
-              )),
-              const SizedBox(height: 20),
-              const Text('Here is a quick summary of your collection'),
-              const SizedBox(height: 20),
-              gameDistribution == null
-                  ? const Center(child: CircularProgressIndicator())
-                  : Card(
-                      elevation: 5,
-                      child: Container(
-                        padding: const EdgeInsets.fromLTRB(0, 50, 0, 50),
-                        child: Distribution(
+        : MultiProvider(
+            providers: [
+              StreamProvider<UserData>.value(
+                  initialData: gameDistribution == null
+                      ? UserData.initialData()
+                      : UserData(
                           playStation: gameDistribution['PlayStation'],
                           playStation2: gameDistribution['PlayStation 2'],
                           playStation3: gameDistribution['PlayStation 3'],
@@ -85,21 +64,52 @@ class _HomePageState extends State<HomePage> {
                           playStation5: gameDistribution['PlayStation 5'],
                           playStationvita: gameDistribution['PlayStation Vita'],
                           playStationportable:
-                              gameDistribution['PlayStation Portable'],
+                              gameDistribution['PlayStation Portable']),
+                  value: FirebaseService(firebaseUser: firebaseUser).userData),
+            ],
+            child: Scaffold(
+              appBar: AppBar(
+                title: const Text("Your Dashboard"),
+                centerTitle: true,
+                actions: [
+                  IconButton(
+                      onPressed: () {
+                        click();
+                      },
+                      icon: const Icon(Icons.power_settings_new))
+                ],
+              ),
+              body: Column(children: [
+                const SizedBox(height: 25.0),
+                Center(
+                    child: Text(
+                  "Welcome ${firebaseUser.displayName}!",
+                  style: const TextStyle(fontSize: 25),
+                )),
+                const SizedBox(height: 20),
+                const Text('Here is a quick summary of your collection'),
+                const SizedBox(height: 20),
+                gameDistribution == null
+                    ? const Center(child: CircularProgressIndicator())
+                    : Card(
+                        elevation: 5,
+                        child: Container(
+                          padding: const EdgeInsets.fromLTRB(0, 50, 0, 50),
+                          child: const Distribution(),
                         ),
                       ),
-                    ),
-              const SizedBox(height: 50),
-            ]),
-            floatingActionButton: FloatingActionButton(
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const SearchScreen()));
-              },
-              backgroundColor: Colors.blue,
-              child: const Icon(Icons.add),
+                const SizedBox(height: 50),
+              ]),
+              floatingActionButton: FloatingActionButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const SearchScreen()));
+                },
+                backgroundColor: Colors.blue,
+                child: const Icon(Icons.add),
+              ),
             ),
           );
   }

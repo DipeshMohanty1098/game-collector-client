@@ -17,7 +17,7 @@ class MongodbService {
   Future<List<dynamic>> getgameResults(
       String searchQuery, String tags, int pageNumber) async {
     var url = Uri.parse(
-        'http://192.168.0.107:3000/data/gameSearch?p=$pageNumber&title=$searchQuery&tags=$tags');
+        'http://192.168.1.104:3000/data/gameSearch?p=$pageNumber&title=$searchQuery&tags=$tags');
     var response = await http
         .get(url, headers: headers)
         .timeout(const Duration(seconds: 30), onTimeout: () {

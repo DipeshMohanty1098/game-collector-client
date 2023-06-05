@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:game_collector/models/games.dart';
 import 'package:game_collector/models/tags.dart';
 import 'package:game_collector/screens/shared/loading.dart';
@@ -102,6 +103,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   ? null
                   : () async {
                       await firebaseUser.getIdToken().then((token) async {
+                        SystemChannels.textInput.invokeMethod('TextInput.hide');
                         dbService = MongodbService(token: token);
                         setState(() {
                           loading = true;
@@ -151,7 +153,7 @@ class _SearchScreenState extends State<SearchScreen> {
           ),
           const SizedBox(height: 10),
           Container(
-              padding: const EdgeInsetsDirectional.only(bottom: 35),
+              padding: const EdgeInsetsDirectional.only(bottom: 55),
               child: noMoreResults == false
                   ? games.isEmpty || games[0] is! Games
                       ? Container()
