@@ -1,16 +1,33 @@
-# game_collector
+# Game Collector
 
-A new Flutter project.
+This is a Flutter application that lets you keep track of your PlayStation Game Collection. There are about **19,000 PlayStation games** that can be added to your collection across all PlayStation consoles. 
+All game data has been scraped from **Metacritic.com**
 
-## Getting Started
+## Consoles Available
+- PlayStation
+- PlayStation 2
+- PlayStation 3
+- PlayStation 4
+- PlayStation 5
+- PlayStation Portable
+- PlayStation Vita
 
-This project is a starting point for a Flutter application.
+# Features
 
-A few resources to get you started if this is your first Flutter project:
+- ## View Your Dashboard
+Single screen that gives you a breakdown of your collection
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+![image](https://github.com/DipeshMohanty1098/game-collector-client/assets/60932129/8f00a5c8-17b3-42a4-b45b-846a454f2118)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- ## View The List of Games You Own Per Console
+
+![image](https://github.com/DipeshMohanty1098/game-collector-client/assets/60932129/34261c1d-fb19-4746-8c5f-97c3d2e15efd)            ![image](https://github.com/DipeshMohanty1098/game-collector-client/assets/60932129/2dc3e74a-3f98-4668-973d-dd955ce9d601)
+
+- ## Search Across 19,000 PlayStation Games To Add To Your Collection
+
+![image](https://github.com/DipeshMohanty1098/game-collector-client/assets/60932129/f6ce8456-7303-4bc5-baa9-83bdf7d2a5f1)
+
+
+  
+
+  
