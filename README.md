@@ -25,7 +25,8 @@ Single screen that gives you a breakdown of your collection
 
 - ## Search Across 19,000 PlayStation Games To Add To Your Collection
 
-![image](https://github.com/DipeshMohanty1098/game-collector-client/assets/60932129/f6ce8456-7303-4bc5-baa9-83bdf7d2a5f1)
+![image](https://github.com/DipeshMohanty1098/game-collector-client/assets/60932129/f6ce8456-7303-4bc5-baa9-83bdf7d2a5f1)             ![image](https://github.com/DipeshMohanty1098/game-collector-client/assets/60932129/a169067c-d22c-4b2f-aa9b-243e1a956690)
+
 
 
   
